@@ -3,8 +3,9 @@
 \usepackage{booktabs}
 \usepackage{tikz}
 \usepackage{verbatim}
-
-\usetheme{Warsaw}
+\renewcommand{\ttdefault}{pcr}
+\usetheme{Madrid}
+\usecolortheme{seahorse}
 \title[Adventure]{Colossal Cave Adventure in Python\\ \dots in the browser!}
 \author[@chris\_{}swenson]{Christopher Swenson}
 \date[PyCon 2018]{PyCon; May 12, 2018}
@@ -87,36 +88,25 @@
 \titlepage
 \end{frame}
 
-\begin{frame}{What is this talk?}
+\begin{frame}{The What}
 
-What is this talk?
-
-\ \\
+\begin{block}{What is this talk?}
 Colossal Cave Adventure, the PDP-10, FORTRAN IV, and a Python interpreter written in JavaScript.
+\end{block}
 
-\ \\
-
-Who is this talk for?
-
-\ \\
-
+\begin{block}{Who is this talk for?}
 Curious programmery people
+\end{block}
 
-\ \\
-
-Slides available on GitHub:
+\begin{block}{Slides available on GitHub}
 \url{https://swenson.github.io/adventure-talk-pycon}
+\end{block}
 
 \end{frame}
 
-\begin{frame}{Who am I?}
+\begin{frame}{The Who}
 
-
-%\ \\
-
-Christopher Swenson, Ph.D
-
-\ \\
+\begin{block}{Christopher Swenson, Ph.D}
 
 Currently at Twilio (prev.\ Google, Government, Simple)
 
@@ -128,6 +118,8 @@ Occasional BeeWare core contributor and PyDX organizer
 
 I love programming languages and stuff.
 
+\end{block}
+
 \end{frame}
 
 \begin{frame}{Motivation}
@@ -135,7 +127,9 @@ Idea: write a game with text messaging!
 
 \ \\
 
+\uncover<2->{
 \dots why not ``port'' the first text adventure?!
+}
 
 \end{frame}
 
@@ -319,52 +313,59 @@ ASCII not quite what we know until 1967
 36/7 = 5 (with 1 bit remainder)\ \\
 \end{frame}
 \begin{frame}
-Packed left-to-right, 1 pad bit on the right
-  \begin{tabular}{|ccccccc|}%ccccccc|ccccccc|ccccccc|ccccccc|c}
-    A & & & & & & \\ % B & & & & & & & C & & & & & & & D & & & & & & & E & & & & & & & & -- \\
+\begin{block}{Packed left-to-right, 1 pad bit on the right}
+{\footnotesize
+\setlength\tabcolsep{2.3pt}
+  \begin{tabular}{|ccccccc|ccccccc|ccccccc|ccccccc|ccccccc|c}
+    A & & & & & & & B & & & & & & & C & & & & & & & D & & & & & & & E & & & & & & & -- \\
     1 &
     0 &
     0 &
     0 &
     0 &
     0 &
-    1 \\
-    % 1 &
-    % 0 &
-    % 0 &
-    % 0 &
-    % 0 &
-    % 1 &
-    % 0 &
-    % 1 &
-    % 0 &
-    % 0 &
-    % 0 &
-    % 0 &
-    % 1 &
-    % 1 &
-    % 1 &
-    % 0 &
-    % 0 &
-    % 0 &
-    % 1 &
-    % 0 &
-    % 0 &
-    % 1 &
-    % 0 &
-    % 0 &
-    % 0 &
-    % 1 &
-    % 0 &
-    % 1 &
-    % 0 \\
+    1 &
+    1 &
+    0 &
+    0 &
+    0 &
+    0 &
+    1 &
+    0 &
+    1 &
+    0 &
+    0 &
+    0 &
+    0 &
+    1 &
+    1 &
+    1 &
+    0 &
+    0 &
+    0 &
+    1 &
+    0 &
+    0 &
+    1 &
+    0 &
+    0 &
+    0 &
+    1 &
+    0 &
+    1 &
+    0 \\
   \end{tabular}
+  }
+\end{block}
 
 \end{frame}
 \begin{frame}[fragile]{Why does it matter?}
-Because the program tokenizes user input itself!
 
+{Because the program tokenizes user input itself!}
+
+{
 \fortran
+\lstset{basicstyle=\tiny\ttfamily}
 \begin{lstlisting}
 	SUBROUTINE GETIN(TWOW,B,C,D)
 	IMPLICIT INTEGER(A-Z)
@@ -396,6 +397,7 @@ Because the program tokenizes user input itself!
 	RETURN
 	END
 \end{lstlisting}
+}
 
 \end{frame}
 \begin{frame}[fragile]{Code (cont'd.)}
@@ -405,17 +407,18 @@ Because the program tokenizes user input itself!
 \end{lstlisting}
 \end{frame}
 \begin{frame}{Compilers}
-How a normal compiler works
 
-\ \\
 
+\begin{block}{How a normal compiler works}
   \begin{enumerate}
     \item Scan text into token stream
     \item Parse tokens into syntax tree
     \item Optimize syntax tree
     \item Generate code
   \end{enumerate}
+\end{block}
 \end{frame}
+
 \begin{frame}{Compilers (cont'd.)}
 But that just sounds exhausting
 
@@ -423,71 +426,75 @@ But that just sounds exhausting
 
 And I only have a few days
 \end{frame}
-\begin{frame}{QND Compiler}
-Coding a quick-and-dirty compiler in Python
+\begin{frame}{Quick and Dirty Compiler}
 
-\ \\
-
-My general strategy:
-
+\begin{block}{General strategy for coding a quick-and-dirty compiler}
 \begin{enumerate}
 \item Split by lines
 \item Split line by whitespace, commas, parens
 \item Check for which statement this is
 \item Parse the line
 \end{enumerate}
-\end{frame}
-\begin{frame}[fragile]{namedtuple}
-\texttt{namedtuple} is your friend
+\end{block}
 
+\end{frame}
+
+
+\begin{frame}[fragile]{Python namedtuple}
+\begin{block}{Python \texttt{namedtuple} is your friend}
 \py
 \begin{lstlisting}
-  # raw lines
-  Line = namedtuple('Line', 'comment,label,continuation,statements'.split(','))
+# raw lines
+Line = namedtuple('Line', 'comment,label,continuation,statements'.split(','))
 
-  # lexical analysis
-  Token = namedtuple('Token', ['name', 'value'])
+# lexical analysis
+Token = namedtuple('Token', ['name', 'value'])
 \end{lstlisting}
+\end{block}
 \end{frame}
 
 \begin{frame}[fragile]{Pseudo-grammar}
-Pseudo-grammar
 
+\begin{block}{Build a pseudo-grammar}
 \py
 \begin{lstlisting}
-  # grammar structure
-  If = namedtuple('If', ['expr', 'statement'])
-  IfNum = namedtuple('IfNum', ['expr', 'neg', 'zero', 'pos'])
-  Goto = namedtuple('Goto', ['labels', 'choice'])
-  Assign = namedtuple('Assign', ['lhs', 'rhs'])
-  Comparison = namedtuple('Compare', ['a', 'op', 'b'])
-  Name = namedtuple('Name', ['name'])
-  Int = namedtuple('Int', ['value'])
-  Float = namedtuple('Float', ['value'])
-  # ...
+# grammar structure
+If = namedtuple('If', ['expr', 'statement'])
+IfNum = namedtuple('IfNum', ['expr', 'neg', 'zero', 'pos'])
+Goto = namedtuple('Goto', ['labels', 'choice'])
+Assign = namedtuple('Assign', ['lhs', 'rhs'])
+Comparison = namedtuple('Compare', ['a', 'op', 'b'])
+Name = namedtuple('Name', ['name'])
+Int = namedtuple('Int', ['value'])
+Float = namedtuple('Float', ['value'])
+# ...
 \end{lstlisting}
+\end{block}
 \end{frame}
 
 \begin{frame}[fragile]{Load data and source code}
-Load the ``tape drive'' and source code
 
+\begin{block}{Load the ``tape drive'' and source code}
 \py
 \begin{lstlisting}
-  # code and data
-  with open('advdat.77-03-31.txt') as fin:
-      data = fin.read()
-  # remove blank line
-  data = data.replace('\n\n', '\n')
+# code and data
+with open('advdat.77-03-31.txt') as fin:
+    data = fin.read()
+# remove blank line
+data = data.replace('\n\n', '\n')
 
-  with open('advf4.77-03-31.txt') as fin:
-      code = fin.read()
+with open('advf4.77-03-31.txt') as fin:
+    code = fin.read()
 
-  # ...
-  lines = combine_lines(parse_lines(code))
+# ...
+lines = combine_lines(parse_lines(code))
 \end{lstlisting}
+\end{block}
 \end{frame}
 
 \begin{frame}[fragile]{Lexical Analysis}
+
+\begin{block}{Scanning}
 \py
 \begin{lstlisting}
 # lexical analysis
@@ -506,9 +513,12 @@ def parse_line(line):
     if label:
         label = int(label)
 \end{lstlisting}
+\end{block}
 \end{frame}
 
 \begin{frame}[fragile]{Lexical Analysis (cont'd.)}
+
+\begin{block}{Continuations}
 \py
 \begin{lstlisting}
       continuation = line[5] != ' '
@@ -518,9 +528,12 @@ def parse_line(line):
           statements = statements[2:]
       return Line(comment, label, continuation, statements)
 \end{lstlisting}
+\end{block}
 \end{frame}
 
 \begin{frame}[fragile]{Main loop}
+
+\begin{block}{execute loop}
 \py
 \begin{lstlisting}
 def execute(self, current):
@@ -533,9 +546,12 @@ def execute(self, current):
       return self.dostack[-1][0]
   return next
 \end{lstlisting}
+\end{block}
 \end{frame}
 
 \begin{frame}[fragile]{Giant switch}
+
+\begin{block}{Statement switch}
 \py
 \begin{lstlisting}
 def execute_statement(self, stmt, current):
@@ -547,9 +563,12 @@ def execute_statement(self, stmt, current):
           else:
               return
 \end{lstlisting}
+\end{block}
 \end{frame}
 
 \begin{frame}[fragile]{Expressions}
+
+\begin{block}{Expression evaluation}
 \py
 \begin{lstlisting}
 def eval_expr(self, expr):
@@ -567,9 +586,12 @@ def eval_expr(self, expr):
               b = string_to_dec_num(b)
           return a ^ b
 \end{lstlisting}
+\end{block}
 \end{frame}
 
 \begin{frame}[fragile]{Statements}
+
+\begin{block}{Statement parsing}
 \py
 \begin{lstlisting}
 def parse_statement(self, statement):
@@ -587,127 +609,125 @@ def parse_statement(self, statement):
       stmt = self.parse_statement(stmt)
       return If(expr, stmt)
 \end{lstlisting}
+\end{block}
 \end{frame}
 
 \begin{frame}[fragile]{Printing}
+
+\begin{block}{Type statement}
 \py
 \begin{lstlisting}
 def execute_type(self, format, vars):
-  if isinstance(vars, ArrayRange):
-      # hack
-      # ...
-  ai = 0
-  vi = 0
+  if isinstance(vars, ArrayRange): # hack ...
+  ai, vi = 0, 0
   while ai < len(format.args) and vi < len(vars):
       arg = format.args[ai]
       ai += 1
       if isinstance(arg, AsciiFormat):
           for c in xrange(arg.count):
-              if vi >= len(vars):
-                  break
-              var = vars[vi]
-              vi += 1
-
-              self.handler.write(to_string(self.eval_expr(var)))
+            if vi >= len(vars): break
+            var = vars[vi]
+            vi += 1
+            self.handler.write(to_string(self.eval_expr(var)))
           continue
       elif isinstance(arg, String):
           self.handler.write(arg.value)
           continue
       print 'halt on format', format, vars
       exit()
-  self.handler.write("\n")
 \end{lstlisting}
+%self.handler.write("\n")
+\end{block}
 \end{frame}
 
 \begin{frame}[fragile]{Outer main loop}
+
+\begin{block}{Main main loop}
 \py
 \begin{lstlisting}
 def go(self):
   self.current_subroutine = '__main__'
   while True:
       self.current = self.execute(self.current)
-
 \end{lstlisting}
+\end{block}
 \end{frame}
 
-\begin{frame}[fragile]{State}
+\begin{frame}[fragile]{State Saving}
+
+\begin{block}{State Saving}
 \py
 \begin{lstlisting}
-  # state
-  class Game(object):
-      def getstate(self):
-          d = dict(
-              globals=self.globals,
-              subroutines=self.subroutines,
-              substack=self.substack,
-              stmtstack=self.stmtstack,
-              current=self.current,
-              varstack=self.varstack,
-              progstack=self.progstack,
-              dostack=self.dostack,
-              prog=self.prog,
-              labels=self.labels,
-              current_subroutine=self.current_subroutine,
-              waiting_for_user=self.waiting_for_user)
-          return bz2.compress(pickle.dumps(d))
-
-      def setstate(self, incoming):
-          data = pickle.loads(bz2.decompress(incoming))
-          self.globals = data['globals']
-          self.subroutines = data['subroutines']
-          self.substack = data['substack']
-          self.stmtstack = data['stmtstack']
-          self.current = data['current']
-          self.varstack = data['varstack']
-          self.progstack = data['progstack']
-          self.dostack = data['dostack']
-          self.prog = data['prog']
-          self.labels = data['labels']
-          self.current_subroutine = data['current_subroutine']
-          self.waiting_for_user = data['waiting_for_user']
+# state
+class Game(object):
+    def getstate(self):
+        d = dict(
+            globals=self.globals,
+            subroutines=self.subroutines,
+            substack=self.substack,
+            stmtstack=self.stmtstack,
+            current=self.current,
+            varstack=self.varstack,
+            progstack=self.progstack,
+            dostack=self.dostack,
+            prog=self.prog,
+            labels=self.labels,
+            current_subroutine=self.current_subroutine,
+            waiting_for_user=self.waiting_for_user)
+        return bz2.compress(pickle.dumps(d))
 \end{lstlisting}
+\end{block}
 \end{frame}
 
+\begin{frame}[fragile]{State Loading}
+
+\begin{block}{State Loading}
+\py
+\begin{lstlisting}
+def setstate(self, incoming):
+    data = pickle.loads(bz2.decompress(incoming))
+    self.globals = data['globals']
+    self.subroutines = data['subroutines']
+    self.substack = data['substack']
+    self.stmtstack = data['stmtstack']
+    self.current = data['current']
+    self.varstack = data['varstack']
+    self.progstack = data['progstack']
+    self.dostack = data['dostack']
+    self.prog = data['prog']
+    self.labels = data['labels']
+    self.current_subroutine = data['current_subroutine']
+    self.waiting_for_user = data['waiting_for_user']
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+
 \begin{frame}[fragile]{Reading keyboard}
+
+\begin{block}{Keyboard input}
 \py
 \begin{lstlisting}
 def execute_accept(self, format, vars):
-  if isinstance(vars, ArrayRange):
-      # hack
-      if not hasattr(vars.expr, 'name'):
-          name = vars.expr[0].name.name
-          index = vars.expr[0].index[0].name
-      else:
-          name = vars.expr.name.name
-          index = vars.expr.index[0].name
-      new_vars = []
-      for i in xrange(self.eval_expr(vars.start), self.eval_expr(vars.end) + 1):
-          new_vars.append(ArrayExpr(name, Int(i)))
-      vars = new_vars
+  if isinstance(vars, ArrayRange): # hack ...
   self.waiting_for_user = True
   line = self.handler.read()
   self.waiting_for_user = False
-  old_data = self.data
-  old_data_cursor = self.data_cursor
-  self.data = line
-  self.data_cursor = 0
-  try:
-      ai = 0
+  old_data, old_data_cursor = self.data, self.data_cursor
+  self.data, self.data_cursor = line, 0
+  for ai in range(len(format.args)):
       vi = 0
-      while ai < len(format.args) and vi < len(vars):
-          arg = format.args[ai]
-          ai += 1
-          if isinstance(arg, AsciiFormat):
-              for c in xrange(arg.count):
-                  var = vars[vi]
-                  vi += 1
-                  chars = self.read_chars(int(arg.read)).upper()
-                  self.assign(var, chars)
-              continue
-  finally:
-      self.data = old_data
-      self.data_cursor = old_data_cursor
+      arg = format.args[ai]
+      if isinstance(arg, AsciiFormat):
+          for c in xrange(arg.count):
+              var = vars[vi]
+              vi += 1
+              chars = self.read_chars(int(arg.read)).upper()
+              self.assign(var, chars)
+          continue
+  self.data, self.data_cursor = old_data, old_data_cursor
 \end{lstlisting}
+\end{block}
 \end{frame}
 
 \begin{frame}{Interfaces}
@@ -733,80 +753,107 @@ Structured so that the state can be serialized, saved for each phone number
 \end{frame}
 
 \begin{frame}[fragile]{Flask app}
+\begin{block}{Flask}
 \py
 \begin{lstlisting}
-  @app.route("/incoming-sms", methods=['GET', 'POST'])
-  def sms_reply():
-      try:
-          cur = conn.cursor()
+@app.route("/incoming-sms", methods=['GET', 'POST'])
+def sms_reply():
+    try:
+        cur = conn.cursor()
 
-          from_ = str(request.values.get('From'))
-          inp = str(request.values.get('Body', '')).upper().strip()
-          inp = inp[:20] # commands shouldn't be longer than this
+        from_ = str(request.values.get('From'))
+        inp = str(request.values.get('Body', '')).upper().strip()
+        inp = inp[:20] # commands shouldn't be longer than this
 
-          cur.execute("SELECT state FROM adventure WHERE num = %s", (from_,))
-          row = cur.fetchone()
-          exists = row is not None
-          ignore_input = False
-
-          if inp == 'RESET' or inp == 'QUIT':
-              if from_ in states:
-                  del states[from_]
-                  exists = False # force a reset
-                  cur.execute("DELETE FROM adventure WHERE num = %s", (from_,))
-          if not exists:
-              print 'starting new game for', from_
-              handler = TwilioHandler()
-              game = Game(handler)
-              t = threading.Thread(target=game.go)
-              t.daemon = True
-              t.start()
-              states[from_] = [handler, game, t]
-              ignore_input = True
-
-          if exists and from_ not in states:
-              # load from backup
-              handler = TwilioHandler()
-              game = Game(handler)
-              t = threading.Thread(target=game.go)
-              t.daemon = True
-              t.start()
-              states[from_] = [handler, game, t]
-              # wait fot it to boot
-              while not game.waiting():
-                  time.sleep(0.001)
-              # empty the queues
-              while not handler.outqueue.empty():
-                  handler.outqueue.get_nowait()
-              game.setstate(row[0])
-              states[from_] = [handler, game, t]
-
-          handler, game, _ = states[from_]
-          if not ignore_input:
-              handler.inqueue.put(inp)
-          time.sleep(0.001)
-          while not game.waiting():
-              time.sleep(0.001)
-          text = ''
-          while not text:
-              while not handler.outqueue.empty():
-                  text += handler.outqueue.get()
-                  time.sleep(0.001)
-
-          # now save the game state to the database
-          state = game.getstate()
-          if exists:
-              cur.execute("UPDATE adventure SET state = %s, modified = NOW() WHERE num = %s", (psycopg2.Binary(state), from_))
-          else:
-              cur.execute("INSERT INTO adventure (num, state) VALUES (%s,%s)", (from_, psycopg2.Binary(state)))
-          conn.commit()
-
-          resp = twiml.Response()
-          resp.message(text)
-          return str(resp)
-      finally:
-          cur.close()
+        cur.execute("SELECT state FROM adventure WHERE num = %s", (from_,))
+        row = cur.fetchone()
+        exists = row is not None
+        ignore_input = False
 \end{lstlisting}
+\end{block}
+\end{frame}
+\begin{frame}[fragile]{Flask app}
+\begin{block}{Flask}
+\py
+\begin{lstlisting}
+    if inp == 'RESET' or inp == 'QUIT':
+        if from_ in states:
+            del states[from_]
+            exists = False # force a reset
+            cur.execute("DELETE FROM adventure WHERE num = %s", (from_,))
+    if not exists:
+        print 'starting new game for', from_
+        handler = TwilioHandler()
+        game = Game(handler)
+        t = threading.Thread(target=game.go)
+        t.daemon = True
+        t.start()
+        states[from_] = [handler, game, t]
+        ignore_input = True
+\end{lstlisting}
+\end{block}
+\end{frame}
+\begin{frame}[fragile]{Flask app}
+\begin{block}{Flask}
+\py
+\begin{lstlisting}
+    if exists and from_ not in states:
+        # load from backup
+        handler = TwilioHandler()
+        game = Game(handler)
+        t = threading.Thread(target=game.go)
+        t.daemon = True
+        t.start()
+        states[from_] = [handler, game, t]
+        # wait fot it to boot
+        while not game.waiting():
+            time.sleep(0.001)
+        # empty the queues
+        while not handler.outqueue.empty():
+            handler.outqueue.get_nowait()
+        game.setstate(row[0])
+        states[from_] = [handler, game, t]
+
+\end{lstlisting}
+\end{block}
+\end{frame}
+\begin{frame}[fragile]{Flask app}
+\begin{block}{Flask}
+\py
+\begin{lstlisting}
+    handler, game, _ = states[from_]
+    if not ignore_input:
+        handler.inqueue.put(inp)
+    time.sleep(0.001)
+    while not game.waiting():
+        time.sleep(0.001)
+    text = ''
+    while not text:
+        while not handler.outqueue.empty():
+            text += handler.outqueue.get()
+            time.sleep(0.001)
+\end{lstlisting}
+\end{block}
+\end{frame}
+\begin{frame}[fragile]{Flask app}
+\begin{block}{Flask}
+\py
+\begin{lstlisting}
+    # now save the game state to the database
+    state = game.getstate()
+    if exists:
+        cur.execute("UPDATE adventure SET state = %s, modified = NOW() WHERE num = %s", (psycopg2.Binary(state), from_))
+    else:
+        cur.execute("INSERT INTO adventure (num, state) VALUES (%s,%s)", (from_, psycopg2.Binary(state)))
+    conn.commit()
+
+    resp = twiml.Response()
+    resp.message(text)
+    return str(resp)
+finally:
+    cur.close()
+\end{lstlisting}
+\end{block}
 \end{frame}
 
 \begin{frame}{Credits}
