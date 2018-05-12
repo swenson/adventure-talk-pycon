@@ -60,7 +60,8 @@
      tabsize=8,
      breaklines=true,
      showtabs=false,
-     captionpos=b
+     captionpos=b,
+     morekeywords={XOR}
   }
 }
 
@@ -99,8 +100,19 @@ Curious programmery people
 \end{block}
 
 \begin{block}{Slides available on GitHub}
-\url{https://swenson.github.io/adventure-talk-pycon}
+\url{https://github.com/swenson/adventure-talk-pycon}
 \end{block}
+
+\end{frame}
+
+\begin{frame}{Alternative titles}
+
+\begin{itemize}
+  \item Being lazy in the hardest way possible
+  \item Adventure: The Programming Turducken
+  \item FORthonScript
+  \item Full-stack FORTRAN IV
+\end{itemize}
 
 \end{frame}
 
@@ -151,16 +163,21 @@ Wildly popular and influential
 
 \ \\
 
-Written in FORTRAN IV for the PDP-10 (defunct)
+Written in FORTRAN IV for the PDP-10
 
 \ \\
 
 Text to +1 (669) 238-3683 to play now!
 
+\ \\
+Or play on the web: \url{https://swenson.github.io/adventurejs/}
+
+
 \end{frame}
 
 \begin{frame}[fragile]{ADVENTURE beginning}
 
+{\footnotesize
 \begin{verbatim}
 SOMEWHERE NEARBY IS COLOSSAL CAVE, WHERE OTHERS HAVE FOUND
 FORTUNES IN TREASURE AND GOLD, THOUGH IT IS RUMORED
@@ -174,7 +191,7 @@ YOU ARE STANDING AT THE END OF A ROAD BEFORE A SMALL BRICK
 BUILDING . AROUND YOU IS A FOREST. A SMALL
 STREAM FLOWS OUT OF THE BUILDING AND DOWN A GULLY.
 \end{verbatim}
-
+}
 \end{frame}
 
 \begin{frame}{PDP-10}
@@ -190,13 +207,17 @@ Pic from \url{http://www.columbia.edu/cu/computinghistory/pdp10.html}
 \begin{itemize}
   \item All caps
   \item No recursion
+  \item No indentation
   \item Line numbers
   \item Spaces don't matter
   \item Punch cards
+  \item Tab = 6 spaces
 \end{itemize}
 
 \end{frame}
 \begin{frame}[fragile]{Code}
+
+\phantom{Or possibly:}
 
 \fortran
 \begin{lstlisting}
@@ -210,6 +231,27 @@ C ADVENTURES
 	3 ,TK(25),KTAB(1000),ATAB(1000),BTEXT(200),DSEEN(10)
 	4 ,DLOC(10),ODLOC(10),DTRAV(20),RTEXT(100),JSPKT(100)
 	5 ,IPLT(100),IFIXT(100)
+\end{lstlisting}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Code (cont'd.)}
+
+Or possibly:
+
+\fortran
+\begin{lstlisting}
+C ADVENTURES
+      IMPLICIT INTEGER(A-Z)
+      REAL RAN
+      COMMON RTEXT,LLINE
+      DIMENSION IOBJ(300),ICHAIN(100),IPLACE(100)
+     1 ,IFIXED(100),COND(300),PROP(100),ABB(300),LLINE(1000,22)
+     2 ,LTEXT(300),STEXT(300),KEY(300),DEFAULT(300),TRAVEL(1000)
+     3 ,TK(25),KTAB(1000),ATAB(1000),BTEXT(200),DSEEN(10)
+     4 ,DLOC(10),ODLOC(10),DTRAV(20),RTEXT(100),JSPKT(100)
+     5 ,IPLT(100),IFIXT(100)
 \end{lstlisting}
 
 \end{frame}
@@ -301,18 +343,17 @@ Nowadays, 8/16/32/64/128/256 are common
 
 \ \\
 DEC (PDP, VAX) used 12, 36, 32
-\end{frame}
-\begin{frame}{36-bit ASCII???}
+
+\ \\
+
+PDP-10 uses 36-bit words
+
+\ \\
+
 PDP-10 (1966) used 7-bit ASCII from 1963
 
-\ \\
-
-ASCII not quite what we know until 1967
-\ \\
-
-36/7 = 5 (with 1 bit remainder)\ \\
 \end{frame}
-\begin{frame}
+\begin{frame}{36-bit ASCII???}
 \begin{block}{Packed left-to-right, 1 pad bit on the right}
 {\footnotesize
 \setlength\tabcolsep{2.3pt}
@@ -653,56 +694,6 @@ def go(self):
 \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{State Saving}
-
-\begin{block}{State Saving}
-\py
-\begin{lstlisting}
-# state
-class Game(object):
-    def getstate(self):
-        d = dict(
-            globals=self.globals,
-            subroutines=self.subroutines,
-            substack=self.substack,
-            stmtstack=self.stmtstack,
-            current=self.current,
-            varstack=self.varstack,
-            progstack=self.progstack,
-            dostack=self.dostack,
-            prog=self.prog,
-            labels=self.labels,
-            current_subroutine=self.current_subroutine,
-            waiting_for_user=self.waiting_for_user)
-        return bz2.compress(pickle.dumps(d))
-\end{lstlisting}
-\end{block}
-\end{frame}
-
-\begin{frame}[fragile]{State Loading}
-
-\begin{block}{State Loading}
-\py
-\begin{lstlisting}
-def setstate(self, incoming):
-    data = pickle.loads(bz2.decompress(incoming))
-    self.globals = data['globals']
-    self.subroutines = data['subroutines']
-    self.substack = data['substack']
-    self.stmtstack = data['stmtstack']
-    self.current = data['current']
-    self.varstack = data['varstack']
-    self.progstack = data['progstack']
-    self.dostack = data['dostack']
-    self.prog = data['prog']
-    self.labels = data['labels']
-    self.current_subroutine = data['current_subroutine']
-    self.waiting_for_user = data['waiting_for_user']
-\end{lstlisting}
-\end{block}
-\end{frame}
-
-
 \begin{frame}[fragile]{Reading keyboard}
 
 \begin{block}{Keyboard input}
@@ -741,7 +732,7 @@ Three interfaces we need
 \end{itemize}
 \end{frame}
 \begin{frame}{SMS!}
-Decided to use Twilio to make an SMS app to play
+Can use Twilio to make an SMS app to play
 
 \ \\
 
@@ -856,11 +847,139 @@ finally:
 \end{block}
 \end{frame}
 
-\begin{frame}{Credits}
-Credits
+\begin{frame}[fragile]{State Saving}
+
+\begin{block}{State Saving}
+\py
+\begin{lstlisting}
+# state
+class Game(object):
+    def getstate(self):
+        d = dict(
+            globals=self.globals,
+            subroutines=self.subroutines,
+            substack=self.substack,
+            stmtstack=self.stmtstack,
+            current=self.current,
+            varstack=self.varstack,
+            progstack=self.progstack,
+            dostack=self.dostack,
+            prog=self.prog,
+            labels=self.labels,
+            current_subroutine=self.current_subroutine,
+            waiting_for_user=self.waiting_for_user)
+        return bz2.compress(pickle.dumps(d))
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\begin{frame}{In the browser?}
+The title of the talk says ``in the browser'', so where does that come in?
 
 \ \\
-Background photo adapted from original by \url{https://www.flickr.com/photos/mwichary/2355790455/in/photolist-9BHncA-brVA3T-4WFSeD-58RBtP-4Ab3qP-brVJQK-74fVg4-asqDNS-4FSQYP-bJMSQF-brVEU8-47FbuY-dhJTbT-brW1BR-brVG7T-7MxNmj-7o8R8g-8nRgCm-9Diwje-74fV2x-55zMan-9gEsDa-74fVuD-bs5YBY-egsHYP-6MEEdd-7jnEvD-oPBp5w-brVEJZ-9CgDHZ-brVuEx-dgYfCK-dY6pU8-77eYMn-4Fu6G4-6j5hoQ-bdnv5a-4JL75S-6R3UUe-6U3WjN-6QUHJS-6ZFCiE-brVdhg-5DtYhY-7i4j12-8xTgMJ-7LEzA9-bnxiJ2-nzb3PD-dhkjo2} Marcin Wichary, CC 2.0
+
+BeeWare Batavia!
+
+\ \\
+
+\begin{center}
+  \includegraphics[width=0.35\textwidth]{brutus-270.png}
+\end{center}
+
+\end{frame}
+\begin{frame}{Batavia}
+Batavia is a Python bytecode interpreter written in JavaScript, so that you can run
+Python in the browser or in Node.
+
+\ \\
+
+\uncover<2->{
+\dots It technically works.
+}
+
+\ \\
+
+\begin{center}
+  \includegraphics[width=0.35\textwidth]{batavia.png}
+\end{center}
+
+\end{frame}
+\begin{frame}{Batavia challenges}
+JS and Python concurrency models don't align. Like, at all.
+
+\ \\
+
+JS expects a callback soup, but Python expects to be interrupted all the time.
+
+\ \\
+
+Current Batavia has some challenges due to lack of callbacks. That's okay, I just added some.
+\end{frame}
+
+\begin{frame}[fragile]{Bytecode only}
+Batavia is still in early stages, and can only execute bytecode.
+
+\ \\
+
+It cannot parse Python.
+
+\ \\
+
+But is otherwise relatively feature-complete.
+\end{frame}
+\begin{frame}{namedtuple}
+\end{frame}
+
+\begin{frame}[fragile]{namedtuple}
+
+\begin{block}{namedtuple}
+\py
+\begin{lstlisting}
+def namedtuple(typename, field_names):
+  class_definition = _class_template.format(
+    typename = typename,
+    field_names = tuple(field_names),
+    num_fields = len(field_names),
+    arg_list = repr(tuple(field_names)).replace("'", "")[1:-1],
+    repr_fmt = ', '.join(_repr_template.format(name=name)
+                         for name in field_names),
+    field_defs = '\n'.join(_field_template.format(index=index, name=name)
+                           for index, name in enumerate(field_names)))
+  try:
+    exec class_definition
+  except SyntaxError as e:
+    raise SyntaxError(e.message + ':\n' + class_definition)
+  result = namespace[typename]
+  return result
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Other JS wats}
+You have to be very, very careful when converting between Python and JavaScript types.
+\begin{block}{wat}
+\js
+\begin{lstlisting}
+> (1 == 2) * -1
+\end{lstlisting}
+\end{block}
+\end{frame}
+\begin{frame}[fragile]{Other JS wats}
+\begin{block}{wat}
+\js
+\begin{lstlisting}
+> (1 == 2) * -1
+-0
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Other JS wats}
+But it works!
+
+\ \\
+
+Demo time! Visit at your own risk: \url{https://swenson.github.io/adventurejs/}
 \end{frame}
 \end{document}
 %sagemathcloud={"zoom_width":155}
